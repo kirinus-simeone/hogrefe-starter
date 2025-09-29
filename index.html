@@ -2,7 +2,6 @@
 <html lang="de">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Caching vermeiden -->
 <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -10,10 +9,11 @@
 <style>
   :root { font-family: system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif; }
   body { display:grid; place-items:center; min-height:100svh; margin:0; background:#f6f7f9; }
+  /* Wrapper: Logo oben, Karte darunter */
+  .wrap { display:flex; flex-direction:column; align-items:center; gap:1.25rem; }
+  .logo { width:min(360px, 60vw); height:auto; }
   .card { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); width:min(520px,90vw); }
-  .brand { display:flex; align-items:center; gap:.75rem; margin:0 0 .75rem; }
-  .brand img { height:36px; width:auto; }
-  h1 { margin:0; font-size:1.25rem; }
+  h1 { margin:0 0 .75rem; font-size:1.25rem; }
   p { margin:.25rem 0 1rem; color:#555; }
   form { display:flex; gap:.5rem; }
   input[type="text"] { flex:1; padding:.9rem 1rem; font-size:1.1rem; border-radius:12px; border:1px solid #cfd7e3; outline:none; }
@@ -24,20 +24,22 @@
   .err { color:#b00020; margin-top:.5rem; min-height:1.2em; }
 </style>
 
-<div class="card">
-  <div class="brand">
-    <img src="./kirinus_health.webp" alt="KIRINUS Health">
+<div class="wrap">
+  <!-- Großes Logo oben -->
+  <img class="logo" src="./kirinus_health.webp" alt="KIRINUS Health">
+
+  <div class="card">
     <h1>Session-Code eingeben</h1>
+    <p>Basis-URL: <code>https://hgf.de/</code></p>
+
+    <form id="f" autocomplete="off">
+      <input id="code" name="code" type="text" placeholder="z. B. f6g3q5xy"
+             inputmode="latin" autocapitalize="off" spellcheck="false" enterkeyhint="go" required>
+      <button type="submit">Öffnen</button>
+    </form>
+
+    <div id="err" class="err" aria-live="polite"></div>
   </div>
-  <p>Basis-URL: <code>https://hgf.de/</code></p>
-
-  <form id="f" autocomplete="off">
-    <input id="code" name="code" type="text" placeholder="z. B. f6g3q5xy"
-           inputmode="latin" autocapitalize="off" spellcheck="false" enterkeyhint="go" required>
-    <button type="submit">Öffnen</button>
-  </form>
-
-  <div id="err" class="err" aria-live="polite"></div>
 </div>
 
 <script>
@@ -45,7 +47,7 @@
   const input = document.getElementById('code');
   const err = document.getElementById('err');
 
-  // Niemals vorbefüllen/speichern
+  // nichts speichern/vorfüllen
   input.value = '';
 
   // Enter soll submitten
@@ -56,7 +58,7 @@
     err.textContent = '';
     const c = (input.value || '').trim();
     if (!c) { err.textContent = 'Bitte Code eingeben.'; return; }
-    // Direkte Weiterleitung – ohne Speicherung & ohne History-Eintrag
+    // Weiterleitung ohne History-Eintrag
     location.replace('https://hgf.de/' + encodeURIComponent(c));
   });
 </script>
