@@ -2,44 +2,62 @@
 <html lang="de">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HGF – Session starten</title>
+<!-- Caching vermeiden -->
+<meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>KIRINUS – Session starten</title>
 <style>
-  :root{font-family:system-ui,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif}
-  body{display:grid;place-items:center;min-height:100svh;margin:0;background:#f6f7f9}
-  .card{background:#fff;padding:2rem;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);width:min(520px,90vw)}
-  h1{margin:0 0 .5rem;font-size:1.4rem}
-  p{margin:0 0 1rem;color:#555}
-  form{display:flex;gap:.5rem}
-  input{flex:1;padding:.9rem 1rem;font-size:1.1rem;border-radius:12px;border:1px solid #cfd7e3;outline:none}
-  input:focus{border-color:#7aa2ff;box-shadow:0 0 0 3px rgba(122,162,255,.25)}
-  button{padding:.9rem 1.2rem;font-size:1.1rem;border-radius:12px;border:0;cursor:pointer;background:#2f6df6;color:#fff}
-  .hint{margin-top:.75rem;font-size:.9rem;color:#666}
-  .err{color:#b00020;margin-top:.5rem;min-height:1.2em}
+  :root { font-family: system-ui, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif; }
+  body { display:grid; place-items:center; min-height:100svh; margin:0; background:#f6f7f9; }
+  .card { background:#fff; padding:2rem; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.08); width:min(520px,90vw); }
+  .brand { display:flex; align-items:center; gap:.75rem; margin:0 0 .75rem; }
+  .brand img { height:36px; width:auto; }
+  h1 { margin:0; font-size:1.25rem; }
+  p { margin:.25rem 0 1rem; color:#555; }
+  form { display:flex; gap:.5rem; }
+  input[type="text"] { flex:1; padding:.9rem 1rem; font-size:1.1rem; border-radius:12px; border:1px solid #cfd7e3; outline:none; }
+  input[type="text"]:focus { border-color:#69a9b3; box-shadow:0 0 0 3px rgba(0,116,135,.25); }
+  button { padding:.9rem 1.2rem; font-size:1.1rem; border-radius:12px; border:0; cursor:pointer; background:#007487; color:#fff; }
+  button:focus-visible { outline:3px solid rgba(0,116,135,.35); outline-offset:2px; }
+  button:hover { filter:brightness(.97); }
+  .err { color:#b00020; margin-top:.5rem; min-height:1.2em; }
 </style>
+
 <div class="card">
-  <h1>Session-Code eingeben</h1>
+  <div class="brand">
+    <img src="./kirinus_health.webp" alt="KIRINUS Health">
+    <h1>Session-Code eingeben</h1>
+  </div>
   <p>Basis-URL: <code>https://hgf.de/</code></p>
+
   <form id="f" autocomplete="off">
-    <input id="code" placeholder="z. B. f6g3q5xy" inputmode="latin" autocapitalize="off" spellcheck="false" required autofocus>
+    <input id="code" name="code" type="text" placeholder="z. B. f6g3q5xy"
+           inputmode="latin" autocapitalize="off" spellcheck="false" enterkeyhint="go" required>
     <button type="submit">Öffnen</button>
   </form>
-  <div class="hint">Tipp: Der letzte Code wird gespeichert.</div>
-  <div id="err" class="err"></div>
+
+  <div id="err" class="err" aria-live="polite"></div>
 </div>
+
 <script>
+  const form = document.getElementById('f');
   const input = document.getElementById('code');
   const err = document.getElementById('err');
-  input.value = localStorage.getItem('hgfLastCode') || '';
+
+  // Niemals vorbefüllen/speichern
+  input.value = '';
+
+  // Enter soll submitten
   input.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.form.requestSubmit(); });
-  document.getElementById('f').addEventListener('submit', (e) => {
+
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     err.textContent = '';
     const c = (input.value || '').trim();
-    if (!c){ err.textContent = 'Bitte Code eingeben.'; return; }
-    localStorage.setItem('hgfLastCode', c);
-    // Weiterleiten auf https://hgf.de/<Code>
-    location.href = 'https://hgf.de/' + encodeURIComponent(c);
+    if (!c) { err.textContent = 'Bitte Code eingeben.'; return; }
+    // Direkte Weiterleitung – ohne Speicherung & ohne History-Eintrag
+    location.replace('https://hgf.de/' + encodeURIComponent(c));
   });
 </script>
 </html>
-
